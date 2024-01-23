@@ -21,6 +21,7 @@ import util
 
 class SearchProblem:
     """
+    haha
     This class outlines the structure of a search problem, but doesn't implement
     any of the methods (in object-oriented terminology: an abstract class).
 
