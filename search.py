@@ -20,7 +20,6 @@ Pacman agents (in searchAgents.py).
 import util
 
 
-fadjjeiajpdlf;jeapoid;adlk
 
 class SearchProblem:
     """
@@ -32,7 +31,6 @@ class SearchProblem:
 
     def getStartState(self):
         """
-        aa
         Returns the start state for the search problem.
         """
         util.raiseNotDefined()
