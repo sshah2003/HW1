@@ -86,30 +86,30 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    
-    current = problem.getStartState() #Initialize ‘current’ node to start state
-    closed = [] # Initialize ‘closed’ as an empty list
-    open = util.Stack() # Initialize ‘open’ as one of (stack, queue, priority queue)
-    
 
-    while not( current is problem.isGoalState(current)): #while start state is not the goal state
+    current = (problem.getStartState(), [])  # Initialize current node to start state
+    closed = set()  # Initialize 'closed' as an empty set
+    open = util.Stack()  # Initialize 'open' as a stack
 
-        closed.append(current) #append current to closed list
-        successors = problem.getSuccessors(current) #initializes successor to the successor of current var
-                                           
-        for s in successors: #for every successor in successors list
-            if not(s in closed): #if a successor is not in closed
-                open.push(current) #push current into open
+    while not problem.isGoalState(current[0]):  # while start state is not the goal state
 
-        current = open.peek() not in closed #sets current to the sucessor of current that is not in closed
-    
-    path = list()
-    
-    while not(problem.getSuccessors(current).isEmpty()): #while there aren't successors left append current to path and go back and continue to add to path
-        path.append(current)
-        current = problem.getSuccessors(current)
-        
-    return path #return path
+        state = current[0] # Initialize state to be the current state
+        actions = current[1] # Initialize actions to be the list of actions
+        closed.add(state)  # add current state to closed set
+
+        successors = problem.getSuccessors(state) # initialize successors to be tuple of successors of the current state
+
+        for s in successors: # For loop to go through the tuple of successors
+            if s[0] not in closed:  # if the successor's state is not in closed/visited 
+                open.push((s[0], actions + [s[1]])) # then it will add it to open along with the actions already in actions list plus the new successor states action
+
+        if open.isEmpty(): #if open is empty returns an empty path
+            return []  
+
+        current = open.pop()  # Updates current to be the successor that is not in closed
+
+    return current[1]  # return the actions to reach the goal state
+
 
 
 def breadthFirstSearch(problem):
