@@ -114,7 +114,31 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+    
+    current = (problem.getStartState(), [])  # Initialize current node to start state
+    closed = set()  # Initialize 'closed' as an empty set
+    open = util.Queue()  # Initialize 'open' as a stack
+
+    while not problem.isGoalState(current[0]):  # while start state is not the goal state
+
+        state = current[0] # Initialize state to be the current state
+        actions = current[1] # Initialize actions to be the list of actions
+        closed.add(state)  # add current state to closed set
+
+        successors = problem.getSuccessors(state) # initialize successors to be tuple of successors of the current state
+
+        for s in successors: # For loop to go through the tuple of successors
+            if s[0] not in closed:  # if the successor's state is not in closed/visited 
+                open.push((s[0], actions + [s[1]])) # then it will add it to open along with the actions already in actions list plus the new successor states action
+
+        if open.isEmpty(): #if open is empty returns an empty path
+            return []  
+
+        current = open.pop()  # Updates current to be the successor that is not in closed
+
+    return current[1]  # return the actions to reach the goal state
+
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
