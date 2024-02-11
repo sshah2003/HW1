@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+from searchGeneric import genericSearch
 
 class SearchProblem:
     """
@@ -87,6 +88,8 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
 
+    return genericSearch(problem, util.Stack())
+
     current = (problem.getStartState(), [])  # Initialize current node to start state
     closed = set()  # Initialize 'closed' as an empty set
     open = util.Stack()  # Initialize 'open' as a stack
@@ -110,11 +113,11 @@ def depthFirstSearch(problem):
 
     return current[1]  # return the actions to reach the goal state
 
-
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     
+    return genericSearch(problem, util.Queue())
+
     current = (problem.getStartState(), [])  # Initialize current node to start state
     closed = set()  # Initialize 'closed' as an empty set
     open = util.Queue()  # Initialize 'open' as a stack
@@ -143,7 +146,9 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+
+    return genericSearch(problem, util.PriorityQueue())
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
