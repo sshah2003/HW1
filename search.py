@@ -88,7 +88,8 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
 
-    return genericSearch(problem, util.Stack())
+    return genericSearch(problem, util.Stack(), nullHeuristic, 0)
+
 
     current = (problem.getStartState(), [])  # Initialize current node to start state
     closed = set()  # Initialize 'closed' as an empty set
@@ -116,7 +117,7 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     
-    return genericSearch(problem, util.Queue())
+    return genericSearch(problem, util.Queue(), nullHeuristic, 0)
 
     current = (problem.getStartState(), [])  # Initialize current node to start state
     closed = set()  # Initialize 'closed' as an empty set
@@ -142,14 +143,11 @@ def breadthFirstSearch(problem):
     return current[1]  # return the actions to reach the goal state
 
 
-    util.raiseNotDefined()
-
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
 
-    return genericSearch(problem, util.PriorityQueue())
+    return genericSearch(problem, util.PriorityQueue(), nullHeuristic, 0)
 
-    util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
@@ -161,7 +159,32 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    current = (problem.getStartState(), [])
+    visited = set()
+    frontier = util.PriorityQueue()
+
+    while not problem.isGoalState(current[0]):
+        state = current[0]
+        actions = current[1]
+
+        if state not in visited:
+            visited.add(state)
+
+            children = problem.getSuccessors(state)
+
+            for s in children:
+                if s[0] not in visited:
+                    cost = problem.getCostOfActions(actions + [s[1]]) + heuristic(s[0], problem)
+                    frontier.push((s[0], actions + [s[1]]), cost)
+
+        if frontier.isEmpty():
+            return []
+
+        current = frontier.pop()
+
+    return current[1]
+    
+
 
 
 # Abbreviations

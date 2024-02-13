@@ -1,6 +1,6 @@
 import util
 
-def genericSearch(problem, dataStruct):
+def genericSearch(problem, dataStruct, heuristic, t):
     currNode = (problem.getStartState(), [])  
     visited = set()  
     open = dataStruct  
