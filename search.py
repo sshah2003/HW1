@@ -161,7 +161,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     current = (problem.getStartState(), [])
     visited = set()
-    frontier = util.PriorityQueue()
+    open = util.PriorityQueue()
 
     while not problem.isGoalState(current[0]):
         state = current[0]
@@ -175,12 +175,12 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             for s in children:
                 if s[0] not in visited:
                     cost = problem.getCostOfActions(actions + [s[1]]) + heuristic(s[0], problem)
-                    frontier.push((s[0], actions + [s[1]]), cost)
+                    open.push((s[0], actions + [s[1]]), cost)
 
-        if frontier.isEmpty():
+        if open.isEmpty():
             return []
 
-        current = frontier.pop()
+        current = open.pop()
 
     return current[1]
     
