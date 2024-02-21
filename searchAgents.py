@@ -288,6 +288,12 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        #sets the start value for the number of corners in start state tuple
+        #if corner is in start position, then make numCorners start with 1
+        self.startState = (self.startingPosition, 1) if self.startingPosition in self.corners else (self.startingPosition, 0)
+        #MIGHT NOT NEED THIS CODE
+        self._visited, self._visitedlist = {}, []
+
 
     def getStartState(self):
         """
@@ -295,6 +301,11 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        #Tuple of x and y position tuple and number of corners hit so far:
+        #*********************
+        #((x, y), numCorners)
+        #*********************
+        return self.startState
         util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -302,6 +313,20 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        #Extract number of corners from state tuple
+        numCorners = state[1]
+        isGoal = numCorners == len(self.corners) #4
+
+        # For display purposes only
+        #MIGHT NOT NEED THIS CODE
+        if isGoal and self.visualize:
+            self._visitedlist.append(state)
+            import __main__
+            if '_display' in dir(__main__):
+                if 'drawExpandedCells' in dir(__main__._display): #@UndefinedVariable
+                    __main__._display.drawExpandedCells(self._visitedlist) #@UndefinedVariable
+
+        return isGoal
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -319,14 +344,38 @@ class CornersProblem(search.SearchProblem):
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
-
             "*** YOUR CODE HERE ***"
 
+            #*******************
+            #IDEA: BFS automatically explores all nodes
+            #GOAL: Add to corner number (second arg in state) if the next state is a corner
+            #******************
+            #STATE: ((x, y), # of corners hit)
+            #Extract current position (x, y) and current number of corners hit on path
+            currentPosition = state[0]
+            numCorners = state[1]
+            x,y = currentPosition
+            #Extract change in position from action and find next possible location (Up, down, left, right)
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            #If the next posititon is a corner, add 1 to the number of corners hit
+            if (nextx, nexty) in self.corners:
+                numCorners += 1
+            #If next position doesn't hit wall, append to successors
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                nextState = ((nextx, nexty), numCorners)
+                cost = self.costFn(nextState)
+                successors.append( ( nextState, action, cost) )
+
+        # Bookkeeping for display purposes
+        
         self._expanded += 1 # DO NOT CHANGE
+        #MIGHT NOT NEED THIS CODE
+        if state not in self._visited:
+            self._visited[state] = True
+            self._visitedlist.append(state)
+
         return successors
 
     def getCostOfActions(self, actions):
