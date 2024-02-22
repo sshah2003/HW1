@@ -120,8 +120,8 @@ def breadthFirstSearch(problem):
     # return genericSearch(problem, util.Queue(), nullHeuristic, 0)
     
     #DIFFERENT State format for CornersProblem
-    if not isinstance(problem, searchAgents.CornersProblem):
-        return genericSearch(problem, util.Queue(), nullHeuristic, 0)
+    # if not isinstance(problem, searchAgents.CornersProblem):
+    return genericSearch(problem, util.Queue(), nullHeuristic, 0)
     #CornersProblem BFS Implementation
     currNode = (problem.getStartState(), [])
     visited = set()
