@@ -294,18 +294,12 @@ class CornersProblem(search.SearchProblem):
         self._visited, self._visitedlist = {}, []
         self.cornersList = [(1,1), (1,top), (right, 1), (right, top)]
 
-        # self.cornersHit = set()
     #MIGHT CAUSE TESTER ISSUES (DON'T THINK SO)
     def getCorners(self) -> set:
         """
         Return number of corners hit so far on path
         """
         return self.corners
-    # def addCornerHit(self, pos) -> None:
-    #     """
-    #     Adds corner that has been hit on path
-    #     """
-    #     self.cornersHit.add(pos)
 
     def isCorner(self, pos) -> bool:
         """

@@ -128,43 +128,32 @@ def breadthFirstSearch(problem):
     cornersHit = set()
     open = util.Queue()
 
-    # while not problem.isGoalState(currNode[0]):
-    while not problem.isCorner(currNode[0][0]): 
-        state = currNode[0]
-        pos = state[0]
-        actions = currNode[1]
+    while not problem.isGoalState(currNode[0]):
 
-        if pos not in visited:
-            visited.add(pos)
-            if problem.isCorner(pos):
-                cornersHit.add(pos)
-            # print(cornersVisited)
-            children = problem.getSuccessors(state) 
-            # print(children)
-            for s in children:
-                # print(s[1]) 
-                st = s[0]
-                p = st[0]
-                if p not in visited and p not in cornersHit:
-                    open.push((st, actions + [s[1]]))
-                # else:
-                #     visited.clear()
+        while not problem.isCorner(currNode[0][0]) or currNode[0][0] in cornersHit: 
+            state = currNode[0]
+            pos = state[0]
+            actions = currNode[1]
 
-        if open.isEmpty(): 
-            return []  
+            if pos not in visited:
+                visited.add(pos)
+                
+                children = problem.getSuccessors(state) 
+                for s in children:
+                    st = s[0]
+                    p = st[0]
+                    if p not in visited and p not in cornersHit:
+                        open.push((st, actions + [s[1]]))
 
-        currNode = open.pop()
+            if open.isEmpty(): 
+                return []  
 
+            currNode = open.pop()
+        cornersHit.add(currNode[0][0])
 
-# FOUND THE ISSUE:::
-# FOUND THE ISSUE:::
-# problem.isCorner doesn't work properly (in searchAgents top right = (1, 1) in tinyCorners topright = (6, 6))
-
-
-    print(cornersHit)
-        # visited.clear()
-        # while not open.isEmpty():
-        #     open.pop()
+        visited.clear()
+        while not open.isEmpty():
+            open.pop()
 
 
     return currNode[1]
