@@ -160,8 +160,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     
-    # return genericSearch(problem, util.PriorityQueueWithFunction(heuristic))
-
     current = (problem.getStartState(), [])
     visited = set()
     open = util.PriorityQueue()
