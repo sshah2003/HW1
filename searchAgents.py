@@ -288,6 +288,24 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        #sets the start value for the number of corners in start state tuple
+        #if corner is in start position, then make numCorners start with 1
+        self.startState = (self.startingPosition, 1) if self.startingPosition in self.corners else (self.startingPosition, 0)
+        self._visited, self._visitedlist = {}, []
+        self.cornersList = [(1,1), (1,top), (right, 1), (right, top)]
+
+    #MIGHT CAUSE TESTER ISSUES (DON'T THINK SO)
+    def getCorners(self) -> set:
+        """
+        Return number of corners hit so far on path
+        """
+        return self.corners
+
+    def isCorner(self, pos) -> bool:
+        """
+        Returns if the provided position (x, y) is a corner
+        """
+        return pos in self.corners
 
     def getStartState(self):
         """
@@ -295,6 +313,11 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        #Tuple of x and y position tuple and number of corners hit so far:
+        #*********************
+        #((x, y), numCorners)
+        #*********************
+        return self.startState
         util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -302,6 +325,17 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        #Extract number of corners from state tuple
+        numCorners = state[1]
+        isGoal = numCorners == len(self.corners) #4
+
+        # For display purposes only
+        #MIGHT NOT NEED THIS CODE
+        if isGoal:
+            self._visitedlist.append(state)
+        
+
+        return isGoal
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -319,14 +353,38 @@ class CornersProblem(search.SearchProblem):
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
-
             "*** YOUR CODE HERE ***"
+            #*******************
+            #IDEA: BFS automatically explores all nodes
+            #GOAL: Add to corner number (second arg in state) if the next state is a corner
+            #******************
+            #STATE: ((x, y), # of corners hit)
+            #Extract current position (x, y) and current number of corners hit on path
+            currentPosition = state[0]
+            numCorners = state[1]
+            x,y = currentPosition
+            #Extract change in position from action and find next possible location (Up, down, left, right)
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            #If the next posititon is a corner, add 1 to the number of corners hit
+            if (nextx, nexty) in self.corners:
+                numCorners += 1
+                #CLEAR LIST TO ALLOW RETRACING
+                # self._visited = {}
+            #If next position doesn't hit wall, append to successors
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                nextState = ((nextx, nexty), numCorners)
+                successors.append( ( nextState, action) )
 
+        # Bookkeeping for display purposes
+        
         self._expanded += 1 # DO NOT CHANGE
+        #MIGHT NOT NEED THIS CODE
+        if state[0] not in self._visited:
+            self._visited[state[0]] = True
+            self._visitedlist.append(state[0])
+
         return successors
 
     def getCostOfActions(self, actions):
