@@ -291,6 +291,8 @@ class CornersProblem(search.SearchProblem):
         self._visited, self._visitedlist = {}, []
         self.cornersHit = set()
 
+    def isCorner(self, pos):
+        return pos in self.corners
 
     def getStartState(self):
         """
