@@ -291,9 +291,27 @@ class CornersProblem(search.SearchProblem):
         #sets the start value for the number of corners in start state tuple
         #if corner is in start position, then make numCorners start with 1
         self.startState = (self.startingPosition, 1) if self.startingPosition in self.corners else (self.startingPosition, 0)
-        #MIGHT NOT NEED THIS CODE
         self._visited, self._visitedlist = {}, []
+        self.cornersList = [(1,1), (1,top), (right, 1), (right, top)]
 
+        # self.cornersHit = set()
+    #MIGHT CAUSE TESTER ISSUES (DON'T THINK SO)
+    def getCorners(self) -> set:
+        """
+        Return number of corners hit so far on path
+        """
+        return self.corners
+    # def addCornerHit(self, pos) -> None:
+    #     """
+    #     Adds corner that has been hit on path
+    #     """
+    #     self.cornersHit.add(pos)
+
+    def isCorner(self, pos) -> bool:
+        """
+        Returns if the provided position (x, y) is a corner
+        """
+        return pos in self.corners
 
     def getStartState(self):
         """
@@ -319,12 +337,9 @@ class CornersProblem(search.SearchProblem):
 
         # For display purposes only
         #MIGHT NOT NEED THIS CODE
-        if isGoal and self.visualize:
+        if isGoal:
             self._visitedlist.append(state)
-            import __main__
-            if '_display' in dir(__main__):
-                if 'drawExpandedCells' in dir(__main__._display): #@UndefinedVariable
-                    __main__._display.drawExpandedCells(self._visitedlist) #@UndefinedVariable
+        
 
         return isGoal
         util.raiseNotDefined()
@@ -345,7 +360,6 @@ class CornersProblem(search.SearchProblem):
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
             "*** YOUR CODE HERE ***"
-
             #*******************
             #IDEA: BFS automatically explores all nodes
             #GOAL: Add to corner number (second arg in state) if the next state is a corner
@@ -361,20 +375,21 @@ class CornersProblem(search.SearchProblem):
             #If the next posititon is a corner, add 1 to the number of corners hit
             if (nextx, nexty) in self.corners:
                 numCorners += 1
+                #CLEAR LIST TO ALLOW RETRACING
+                # self._visited = {}
             #If next position doesn't hit wall, append to successors
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
                 nextState = ((nextx, nexty), numCorners)
-                cost = self.costFn(nextState)
-                successors.append( ( nextState, action, cost) )
+                successors.append( ( nextState, action) )
 
         # Bookkeeping for display purposes
         
         self._expanded += 1 # DO NOT CHANGE
         #MIGHT NOT NEED THIS CODE
-        if state not in self._visited:
-            self._visited[state] = True
-            self._visitedlist.append(state)
+        if state[0] not in self._visited:
+            self._visited[state[0]] = True
+            self._visitedlist.append(state[0])
 
         return successors
 

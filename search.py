@@ -17,6 +17,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
+import searchAgents
 import util
 from searchGeneric import genericSearch
 
@@ -116,31 +117,57 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
+    # return genericSearch(problem, util.Queue(), nullHeuristic, 0)
     
-    return genericSearch(problem, util.Queue(), nullHeuristic, 0)
+    #DIFFERENT State format for CornersProblem
+    if not isinstance(problem, searchAgents.CornersProblem):
+        return genericSearch(problem, util.Queue(), nullHeuristic, 0)
+    #CornersProblem BFS Implementation
+    currNode = (problem.getStartState(), [])
+    visited = set()
+    cornersHit = set()
+    open = util.Queue()
 
-    current = (problem.getStartState(), [])  # Initialize current node to start state
-    closed = set()  # Initialize 'closed' as an empty set
-    open = util.Queue()  # Initialize 'open' as a stack
+    # while not problem.isGoalState(currNode[0]):
+    while not problem.isCorner(currNode[0][0]): 
+        state = currNode[0]
+        pos = state[0]
+        actions = currNode[1]
 
-    while not problem.isGoalState(current[0]):  # while start state is not the goal state
+        if pos not in visited:
+            visited.add(pos)
+            if problem.isCorner(pos):
+                cornersHit.add(pos)
+            # print(cornersVisited)
+            children = problem.getSuccessors(state) 
+            # print(children)
+            for s in children:
+                # print(s[1]) 
+                st = s[0]
+                p = st[0]
+                if p not in visited and p not in cornersHit:
+                    open.push((st, actions + [s[1]]))
+                # else:
+                #     visited.clear()
 
-        state = current[0] # Initialize state to be the current state
-        actions = current[1] # Initialize actions to be the list of actions
-        closed.add(state)  # add current state to closed set
-
-        successors = problem.getSuccessors(state) # initialize successors to be tuple of successors of the current state
-
-        for s in successors: # For loop to go through the tuple of successors
-            if s[0] not in closed:  # if the successor's state is not in closed/visited 
-                open.push((s[0], actions + [s[1]])) # then it will add it to open along with the actions already in actions list plus the new successor states action
-
-        if open.isEmpty(): #if open is empty returns an empty path
+        if open.isEmpty(): 
             return []  
 
-        current = open.pop()  # Updates current to be the successor that is not in closed
+        currNode = open.pop()
 
-    return current[1]  # return the actions to reach the goal state
+
+# FOUND THE ISSUE:::
+# FOUND THE ISSUE:::
+# problem.isCorner doesn't work properly (in searchAgents top right = (1, 1) in tinyCorners topright = (6, 6))
+
+
+    print(cornersHit)
+        # visited.clear()
+        # while not open.isEmpty():
+        #     open.pop()
+
+
+    return currNode[1]
 
 
 def uniformCostSearch(problem):
