@@ -288,11 +288,9 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self._visited, self._visitedlist = {}, []
-        self.cornersHit = set()
-
-    def isCorner(self, pos):
-        return pos in self.corners
+        #NEEDS TO BE TUPLE: needs to be hashable for bfs to work
+        self.startState = (self.startingPosition, ()) #visited{ (1, 2), ()}   --->  visited{ ((1, 2), ()), ((1, 2), ((cornerx, cornery)))}
+        #The position is in visited, BUT... the tuple of corners enables retracing
 
     def getStartState(self):
         """
@@ -301,9 +299,9 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         #*******
-        #(x, y)
-        #*******
-        return self.startingPosition
+        #((x, y), tuple of corners)
+        #*******                                
+        return self.startState
         util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -311,8 +309,8 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        isGoal = len(self.cornersHit) == len(self.corners) #4
-        
+        cornersHit = state[1]
+        isGoal = len(cornersHit) == len(self.corners) #4
 
         return isGoal
         util.raiseNotDefined()
@@ -333,27 +331,25 @@ class CornersProblem(search.SearchProblem):
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
             "*** YOUR CODE HERE ***"
-            currentPosition = state
+            currentPosition, prevCornersHit = state
             x,y = currentPosition
             #Extract change in position from action and find next possible location (Up, down, left, right)
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            #If found new corner, add to cornersHit
-            if (nextx, nexty) in self.corners and (nextx, nexty) not in self.cornersHit:
-                #DON'T NEED TO CHANGE STATE FORMAT AT ALL!!!!! USE SELF.CORNERSHIT TO CHECK GOAL STATE only
-                self.cornersHit.add((nextx, nexty))
+            #If found NEW corner, add to corners hit
+            newCornersHit = prevCornersHit
+            if (nextx, nexty) in self.corners and (nextx, nexty) not in prevCornersHit:
+                newCornersHit = newCornersHit + ((nextx, nexty),)
 
             #If next position doesn't hit wall, append to successors
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
-                nextState = (nextx, nexty)
+                nextState = ((nextx, nexty), newCornersHit)
                 successors.append( ( nextState, action) )
  
         # Bookkeeping for display purposes
         
-        self._expanded += 1 # DO NOT CHANGE
-        #MIGHT NOT NEED THIS CODE
-        
+        self._expanded += 1 # DO NOT CHANGE        
 
         return successors
 
