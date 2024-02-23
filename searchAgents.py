@@ -389,7 +389,6 @@ def cornersHeuristic(state, problem):
     corners = problem.corners
     toVisit = []
     mannyEucyDists = []
-    euccyDist = []
     if problem.isGoalState(state):
         return 0
     else:
@@ -400,6 +399,7 @@ def cornersHeuristic(state, problem):
             mannyEucyDists.append((manhattanDistance(currPos, corner) + EuccyDist(currPos, corner)) / 2)
         if len(mannyEucyDists) != 0:
             return max(mannyEucyDists)
+        return 0
 
 def EuccyDist(xy1, xy2):
     return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
