@@ -120,37 +120,36 @@ def breadthFirstSearch(problem):
     # return genericSearch(problem, util.Queue(), nullHeuristic, 0)
     
     #DIFFERENT State format for CornersProblem
-    if not isinstance(problem, searchAgents.CornersProblem):
-        return genericSearch(problem, util.Queue(), nullHeuristic, 0)
+    # if not isinstance(problem, searchAgents.CornersProblem):
+    return genericSearch(problem, util.Queue(), nullHeuristic, 0)
     #CornersProblem BFS Implementation
     currNode = (problem.getStartState(), [])
     visited = set()
     cornersHit = set()
-    open = util.Queue()
+    open  = util.Queue()
 
     while not problem.isGoalState(currNode[0]):
 
-        while not problem.isCorner(currNode[0][0]) or currNode[0][0] in cornersHit: 
-            state = currNode[0]
-            pos = state[0]
-            actions = currNode[1]
+        while not problem.isCorner(currNode[0]) or currNode[0] in cornersHit: 
+            state = currNode[0] 
+            actions = currNode[1] 
 
-            if pos not in visited:
-                visited.add(pos)
-                
+            # We only want to pop() after it's been visited
+            if state not in visited:
+                visited.add(state)  
+
                 children = problem.getSuccessors(state) 
-                for s in children:
-                    st = s[0]
-                    p = st[0]
-                    if p not in visited and p not in cornersHit:
-                        open.push((st, actions + [s[1]]))
+
+                for s in children: 
+                    if s[0] not in visited:
+                        open.push((s[0], actions + [s[1]]))
 
             if open.isEmpty(): 
                 return []  
 
-            currNode = open.pop()
-        cornersHit.add(currNode[0][0])
+            currNode = open.pop()  
 
+        # cornersHit.add(currNode[0])
         visited.clear()
         while not open.isEmpty():
             open.pop()
