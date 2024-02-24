@@ -503,11 +503,18 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     #GOAL: find the shortest path to a piece of food from the current state, return that as heuristic
     #Algo: Prim's algo to find the shortest path
-    
-    if problem.heuristicInfo.get("foodList", 0) == 0:
-        foodList = foodGrid.asList()
-    
-    
+    #Caluclates distance
+    def calcCost(xy1, xy2):
+        eucl = EuccyDist(xy1, xy2)
+        man = manhattanDistance(xy1, xy2)
+        return min(eucl, man)
+    #Get list of uneated food
+    foodList = foodGrid.asList()
+
+    # tempList = foodList[:]
+    #add position to the foodList (for minheap/edge creation)
+    if position not in foodList:
+        foodList.append(position)
     #get start position index in foodList
     startIndex = 0
     for i, n in enumerate(foodList):
@@ -523,7 +530,7 @@ def foodHeuristic(state, problem):
         x, y = foodList[i]
         for j in range(i+1, N): #Prevents re-mapping
             nextx, nexty = foodList[j]
-            cost = 0 #SHOULD NOT BE 0, NEED TO GET COST OF TRAVERSAL TO THAT POINT
+            cost = calcCost([x, y], [nextx, nexty])
             #Create edge
             edges[i].append([cost, j])
             edges[j].append([cost, i])
@@ -532,7 +539,7 @@ def foodHeuristic(state, problem):
     minCost = 0
     eaten = set()
     foodToEat = util.PriorityQueue()
-    foodToEat.push(0, startIndex) #[cost, state]
+    foodToEat.push((0, startIndex), 0) #[cost, state]
     
     while len(eaten) < N: #while all food hasn't been eaten
         cost, foodInd = foodToEat.pop()
@@ -546,7 +553,17 @@ def foodHeuristic(state, problem):
             if fstate in eaten:
                 continue
             foodToEat.push([fcost, fstate], fcost)
-        
+    
+    #UPDATE FOODLIST (removing eaten foods)
+    #if current position (state argument) is in the foodList, remove it and store it
+    # newFoodList = [] 
+    # for f in tempList:
+    #     if f == position:
+    #         continue
+    #     newFoodList.append(f)
+    
+    # problem.heuristicInfo["foodList"] = newFoodList
+
     return minCost
 
 
