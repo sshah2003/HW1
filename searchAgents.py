@@ -553,16 +553,6 @@ def foodHeuristic(state, problem):
             if fstate in eaten:
                 continue
             foodToEat.push([fcost, fstate], fcost)
-    
-    #UPDATE FOODLIST (removing eaten foods)
-    #if current position (state argument) is in the foodList, remove it and store it
-    # newFoodList = [] 
-    # for f in tempList:
-    #     if f == position:
-    #         continue
-    #     newFoodList.append(f)
-    
-    # problem.heuristicInfo["foodList"] = newFoodList
 
     return minCost
 
