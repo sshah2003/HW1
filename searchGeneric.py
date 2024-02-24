@@ -17,9 +17,11 @@ def genericSearch(problem, dataStruct, heuristic, t):
 
             for s in children: 
                 if s[0] not in visited:  
-                    if isinstance(open, util.Queue) or isinstance(open, util.Stack):
-                        open.push((s[0], actions + [s[1]])) 
-                    elif isinstance(open, util.PriorityQueue) or isinstance(open, util.PriorityQueueWithFunction):
+                    if  isinstance(open, util.Queue) or isinstance(open, util.Stack):
+                        open.push((s[0], actions + [s[1]]))
+                    if isinstance(open, util.PriorityQueueWithFunction):
+                        open.push((s[0], actions + [s[1]]))
+                    elif isinstance(open, util.PriorityQueue):
                         cost = problem.getCostOfActions(actions + [s[1]])
                         open.update((s[0], actions + [s[1]]), cost)
 

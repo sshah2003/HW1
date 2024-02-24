@@ -38,6 +38,7 @@ from game import Directions
 from game import Agent
 from game import Actions
 import util
+from util import manhattanDistance
 import time
 import search
 
@@ -345,7 +346,7 @@ class CornersProblem(search.SearchProblem):
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
                 nextState = ((nextx, nexty), newCornersHit)
-                successors.append( ( nextState, action) )
+                successors.append( ( nextState, action, 1) )
  
         # Bookkeeping for display purposes
         
@@ -382,9 +383,31 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
+    
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    currPos, visited = state
+    corners = problem.corners
+    toVisit = []
+    mannyEucyDists = []
+    mannyDists = []
+    euccyDists = []
+    if problem.isGoalState(state):
+        return 0
+    else:
+        for corner in corners:
+            if corner not in visited:
+                toVisit.append(corner)
+        for corner in toVisit:
+            mannyEucyDists.append((manhattanDistance(currPos, corner) + EuccyDist(currPos, corner)) / 2)
+            mannyDists.append(manhattanDistance(currPos, corner))
+            euccyDists.append(EuccyDist(currPos, corner))
+        if len(mannyEucyDists) != 0 and len(euccyDists) != 0 and len(mannyDists) != 0:
+            return max([max(mannyEucyDists),max(euccyDists),max(mannyDists)])
+        return 0
+
+
+def EuccyDist(xy1, xy2):
+    return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
