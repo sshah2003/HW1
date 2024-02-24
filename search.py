@@ -17,9 +17,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
-import searchAgents
 import util
-from searchGeneric import genericSearch
 
 class SearchProblem:
     """
@@ -74,6 +72,38 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def genericSearch(problem, dataStruct, heuristic, t):
+    currNode = (problem.getStartState(), [])  
+    visited = set()  
+    open = dataStruct  
+
+    while not problem.isGoalState(currNode[0]):  
+        state = currNode[0] 
+        actions = currNode[1] 
+
+        # We only want to pop() after it's been visited
+        if state not in visited:
+            visited.add(state)  
+
+            children = problem.getSuccessors(state) 
+
+            for s in children: 
+                if s[0] not in visited:  
+                    if  isinstance(open, util.Queue) or isinstance(open, util.Stack):
+                        open.push((s[0], actions + [s[1]]))
+                    if isinstance(open, util.PriorityQueueWithFunction):
+                        open.push((s[0], actions + [s[1]]))
+                    elif isinstance(open, util.PriorityQueue):
+                        cost = problem.getCostOfActions(actions + [s[1]])
+                        open.update((s[0], actions + [s[1]]), cost)
+
+        if open.isEmpty(): 
+            return []  
+
+        currNode = open.pop()  
+
+    return currNode[1]
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -92,29 +122,6 @@ def depthFirstSearch(problem):
     return genericSearch(problem, util.Stack(), nullHeuristic, 0)
 
 
-    current = (problem.getStartState(), [])  # Initialize current node to start state
-    closed = set()  # Initialize 'closed' as an empty set
-    open = util.Stack()  # Initialize 'open' as a stack
-
-    while not problem.isGoalState(current[0]):  # while start state is not the goal state
-
-        state = current[0] # Initialize state to be the current state
-        actions = current[1] # Initialize actions to be the list of actions
-        closed.add(state)  # add current state to closed set
-
-        successors = problem.getSuccessors(state) # initialize successors to be tuple of successors of the current state
-
-        for s in successors: # For loop to go through the tuple of successors
-            if s[0] not in closed:  # if the successor's state is not in closed/visited 
-                open.push((s[0], actions + [s[1]])) # then it will add it to open along with the actions already in actions list plus the new successor states action
-
-        if open.isEmpty(): #if open is empty returns an empty path
-            return []  
-
-        current = open.pop()  # Updates current to be the successor that is not in closed
-
-    return current[1]  # return the actions to reach the goal state
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     # return genericSearch(problem, util.Queue(), nullHeuristic, 0)
@@ -122,40 +129,6 @@ def breadthFirstSearch(problem):
     #DIFFERENT State format for CornersProblem
     # if not isinstance(problem, searchAgents.CornersProblem):
     return genericSearch(problem, util.Queue(), nullHeuristic, 0)
-    #CornersProblem BFS Implementation
-    currNode = (problem.getStartState(), [])
-    visited = set()
-    cornersHit = set()
-    open  = util.Queue()
-
-    while not problem.isGoalState(currNode[0]):
-
-        while not problem.isCorner(currNode[0]) or currNode[0] in cornersHit: 
-            state = currNode[0] 
-            actions = currNode[1] 
-
-            # We only want to pop() after it's been visited
-            if state not in visited:
-                visited.add(state)  
-
-                children = problem.getSuccessors(state) 
-
-                for s in children: 
-                    if s[0] not in visited:
-                        open.push((s[0], actions + [s[1]]))
-
-            if open.isEmpty(): 
-                return []  
-
-            currNode = open.pop()  
-
-        # cornersHit.add(currNode[0])
-        visited.clear()
-        while not open.isEmpty():
-            open.pop()
-
-
-    return currNode[1]
 
 
 def uniformCostSearch(problem):
