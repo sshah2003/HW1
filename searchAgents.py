@@ -501,22 +501,54 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-
-    pacX, pacY = position
-
-    foodDistances = []
-
-    for x, y in foodGrid.asList():
-
-        manDistance = abs(x - pacX) + abs(y - pacY)
-        foodDistances.append(manDistance)
-        
-    if len(foodDistances) > 0:
-        closest = min(foodDistances)
-    else:
-        closest = 0
+    #GOAL: find the shortest path to a piece of food from the current state, return that as heuristic
+    #Algo: Prim's algo to find the shortest path
     
-    return closest
+    if problem.heuristicInfo.get("foodList", 0) == 0:
+        foodList = foodGrid.asList()
+    
+    
+    #get start position index in foodList
+    startIndex = 0
+    for i, n in enumerate(foodList):
+        if n == position:
+            startIndex = i
+            break
+    #Create min span tree of maze
+    N = len(foodList)
+    #currState: possible states to visit
+    edges = { i:[] for i in range(N) } #create mapping for each uneaten food: [cost, state]
+
+    for i in range(N):
+        x, y = foodList[i]
+        for j in range(i+1, N): #Prevents re-mapping
+            nextx, nexty = foodList[j]
+            cost = 0 #SHOULD NOT BE 0, NEED TO GET COST OF TRAVERSAL TO THAT POINT
+            #Create edge
+            edges[i].append([cost, j])
+            edges[j].append([cost, i])
+
+    #Prim's
+    minCost = 0
+    eaten = set()
+    foodToEat = util.PriorityQueue()
+    foodToEat.push(0, startIndex) #[cost, state]
+    
+    while len(eaten) < N: #while all food hasn't been eaten
+        cost, foodInd = foodToEat.pop()
+        #If food has been eaten, skip, else eat the food and add cost
+        if foodInd in eaten:
+            continue
+        minCost += cost
+        eaten.add(foodInd)
+        #Go through all possible edges and add to foodToEat IF uneaten
+        for fcost, fstate in edges[foodInd]:
+            if fstate in eaten:
+                continue
+            foodToEat.push([fcost, fstate], fcost)
+        
+    return minCost
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
